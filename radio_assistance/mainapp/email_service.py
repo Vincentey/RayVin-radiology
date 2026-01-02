@@ -27,13 +27,17 @@ env_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(env_path)
 
 # Email Configuration
-EMAIL_PROVIDER = os.getenv("EMAIL_PROVIDER", "gmail_api")  # gmail_api or smtp
+EMAIL_PROVIDER = os.getenv("EMAIL_PROVIDER", "gmail_api")  # gmail_api, smtp, or resend
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", SMTP_USER)
-SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "Radiology AI Assistant")
+SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "RayVin Radiology")
+
+# Resend Configuration
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "onboarding@resend.dev")
 
 # Gmail API paths
 GMAIL_CREDENTIALS_PATH = Path(__file__).resolve().parents[2] / "credentials.json"
@@ -177,25 +181,76 @@ class SMTPService:
             return {"success": False, "message": str(e)}
 
 
+class ResendService:
+    """Resend email service - works with Railway (uses HTTP API)."""
+    
+    def __init__(self):
+        self.api_key = RESEND_API_KEY
+        self.from_email = RESEND_FROM_EMAIL
+        self._is_configured = bool(RESEND_API_KEY)
+    
+    def send_email(self, to_email: str, subject: str, html_content: str, text_content: Optional[str] = None) -> Dict:
+        """Send email via Resend API."""
+        import urllib.request
+        import json
+        
+        if not self._is_configured:
+            return {"success": False, "message": "Resend not configured"}
+        
+        try:
+            url = "https://api.resend.com/emails"
+            
+            payload = {
+                "from": f"RayVin <{self.from_email}>",
+                "to": [to_email],
+                "subject": subject,
+                "html": html_content
+            }
+            
+            if text_content:
+                payload["text"] = text_content
+            
+            data = json.dumps(payload).encode('utf-8')
+            
+            req = urllib.request.Request(url, data=data)
+            req.add_header("Authorization", f"Bearer {self.api_key}")
+            req.add_header("Content-Type", "application/json")
+            
+            with urllib.request.urlopen(req, timeout=30) as response:
+                result = json.loads(response.read().decode())
+            
+            print(f"[RESEND] Email sent to {to_email}")
+            return {"success": True, "message": "Email sent via Resend", "id": result.get("id")}
+            
+        except Exception as e:
+            print(f"[RESEND] Error: {e}")
+            return {"success": False, "message": str(e)}
+
+
 class EmailService:
-    """Unified email service - uses Gmail API or SMTP based on config."""
+    """Unified email service - uses Gmail API, SMTP, or Resend based on config."""
     
     def __init__(self):
         self.provider = EMAIL_PROVIDER
         self._gmail = None
         self._smtp = None
+        self._resend = None
         
-        if self.provider == "gmail_api" and GMAIL_CREDENTIALS_PATH.exists():
+        if self.provider == "resend" and RESEND_API_KEY:
+            self._resend = ResendService()
+            self._is_configured = True
+            print("[EMAIL] Using Resend")
+        elif self.provider == "gmail_api" and GMAIL_CREDENTIALS_PATH.exists():
             self._gmail = GmailAPIService()
             self._is_configured = True
             print("[EMAIL] Using Gmail API with OAuth 2.0")
-        elif SMTP_USER and SMTP_PASSWORD:
+        elif self.provider == "smtp" and SMTP_USER and SMTP_PASSWORD:
             self._smtp = SMTPService()
             self._is_configured = True
             print("[EMAIL] Using SMTP")
         else:
             self._is_configured = False
-            print("[EMAIL] Not configured - set up Gmail API or SMTP")
+            print("[EMAIL] Not configured - set EMAIL_PROVIDER and credentials")
     
     def is_configured(self) -> bool:
         """Check if email service is properly configured."""
@@ -205,9 +260,11 @@ class EmailService:
         """Send email using configured provider."""
         if not self._is_configured:
             print(f"[EMAIL] Not configured. Would send to {to_email}: {subject}")
-            return {"success": False, "message": "Email not configured. Run: python -m radio_assistance.mainapp.email_service"}
+            return {"success": False, "message": "Email not configured. Set EMAIL_PROVIDER and credentials."}
         
-        if self._gmail:
+        if self._resend:
+            return self._resend.send_email(to_email, subject, html_content, text_content)
+        elif self._gmail:
             return self._gmail.send_email(to_email, subject, html_content, text_content)
         elif self._smtp:
             return self._smtp.send_email(to_email, subject, html_content, text_content)
