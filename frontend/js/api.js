@@ -3,11 +3,10 @@
  */
 
 // Auto-detect API base URL:
-// - Production (nginx): Same origin (empty string uses relative paths)
+// - Production: Same origin (empty string uses relative paths)
 // - Development: localhost:8000
-const API_BASE = window.location.port === '80' || window.location.port === '' 
-    ? '' 
-    : 'http://localhost:8000';
+const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+const API_BASE = isProduction ? '' : 'http://localhost:8000';
 
 class RadiologyAPI {
   constructor() {

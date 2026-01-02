@@ -12,7 +12,8 @@ Provides REST API endpoints for:
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from sqlalchemy.orm import Session
 import shutil
@@ -124,6 +125,13 @@ app.add_middleware(
 # Infrastructure
 upload_root = Path("uploads")
 upload_root.mkdir(parents=True, exist_ok=True)
+
+# Static files for frontend
+frontend_path = Path(__file__).resolve().parents[2] / "frontend"
+if frontend_path.exists():
+    app.mount("/css", StaticFiles(directory=frontend_path / "css"), name="css")
+    app.mount("/js", StaticFiles(directory=frontend_path / "js"), name="js")
+    app.mount("/assets", StaticFiles(directory=frontend_path / "assets"), name="assets")
 
 
 # Response Models
@@ -756,3 +764,35 @@ async def delete_study(
     
     shutil.rmtree(study_dir)
     return {"status": "deleted", "study_id": study_id, "deleted_by": current_user.username}
+
+
+# ==================== FRONTEND ROUTES ====================
+
+@app.get("/", tags=["Frontend"])
+async def serve_index():
+    """Serve the login/signup page."""
+    return FileResponse(frontend_path / "index.html")
+
+
+@app.get("/dashboard.html", tags=["Frontend"])
+async def serve_dashboard():
+    """Serve the dashboard page."""
+    return FileResponse(frontend_path / "dashboard.html")
+
+
+@app.get("/analysis.html", tags=["Frontend"])
+async def serve_analysis():
+    """Serve the analysis page."""
+    return FileResponse(frontend_path / "analysis.html")
+
+
+@app.get("/reset-password.html", tags=["Frontend"])
+async def serve_reset_password():
+    """Serve the password reset page."""
+    return FileResponse(frontend_path / "reset-password.html")
+
+
+@app.get("/verify-email.html", tags=["Frontend"])
+async def serve_verify_email():
+    """Serve the email verification page."""
+    return FileResponse(frontend_path / "verify-email.html")
