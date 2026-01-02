@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analysis Results - RayVin</title>
+  <link rel="icon" type="image/png" href="assets/rayvinc.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      .glass-card { box-shadow: none; border: 1px solid #ddd; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body data-page="analysis">
+  <div class="container dashboard">
+    <!-- Navigation -->
+    <nav class="glass-card nav-bar no-print">
+      <div class="nav-logo">
+        <button class="btn btn-glass" onclick="goBack()" style="padding:10px 16px;margin-right:12px;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <img src="assets/rayvinc.png" alt="RayVin" style="width: 28px; height: 28px; object-fit: contain; margin-right: 8px;">
+        <span class="title-gradient">Analysis Results</span>
+      </div>
+      <div class="nav-user">
+        <button class="btn btn-glass" onclick="printReport()" style="padding:10px 16px;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 9V2h12v7"/>
+            <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+            <path d="M6 14h12v8H6z"/>
+          </svg>
+          Print
+        </button>
+        <div class="user-avatar" id="user-avatar">?</div>
+      </div>
+    </nav>
+
+    <!-- Summary Header -->
+    <div class="glass-card" style="padding:24px;margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+        <div>
+          <h1 style="font-size:24px;margin-bottom:8px;">
+            <span id="modality">-</span> Analysis
+          </h1>
+          <p style="color:var(--text-muted);font-size:14px;">
+            Study ID: <code id="study-id">-</code>
+          </p>
+        </div>
+        <div id="urgency-badge" class="urgency-badge routine">
+          <span>●</span> ROUTINE
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Grid -->
+    <div class="results-container">
+      <!-- Findings Card -->
+      <div class="glass-card findings-card">
+        <h3 style="margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          AI Detected Findings
+        </h3>
+        <div id="findings-list">
+          <p style="color:var(--text-muted);text-align:center;padding:20px;">No findings available</p>
+        </div>
+      </div>
+
+      <!-- Report Card -->
+      <div class="glass-card report-card">
+        <h3 style="margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+          </svg>
+          Radiology Report
+        </h3>
+        <div class="report-content" id="report-content">
+          No report generated.
+        </div>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="glass-card" style="padding:16px 24px;margin-top:24px;background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);">
+      <p style="font-size:13px;color:var(--text-secondary);display:flex;align-items:flex-start;gap:12px;">
+        <svg width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:2px;">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <path d="M12 9v4M12 17h.01"/>
+        </svg>
+        <span>
+          <strong>AI-Assisted Analysis:</strong> This report was generated using AI (TorchXRayVision + GPT-4) 
+          and is intended for clinical decision support only. All findings must be verified by a qualified 
+          radiologist. Clinical correlation is recommended.
+        </span>
+      </p>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
+
+

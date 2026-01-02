@@ -1,0 +1,98 @@
+# RayVin - Radiology AI Assistant - Docker Compose Configuration
+# Production deployment with PostgreSQL, API and Frontend services
+
+version: '3.8'
+
+services:
+  # ===========================================
+  # PostgreSQL Database
+  # ===========================================
+  db:
+    image: postgres:15-alpine
+    container_name: rayvin-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${DB_USER:-rayvin}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-rayvin_password}
+      - POSTGRES_DB=${DB_NAME:-rayvin_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-rayvin} -d ${DB_NAME:-rayvin_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - radiology-network
+
+  # ===========================================
+  # Backend API Service
+  # ===========================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rayvin-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER:-rayvin}:${DB_PASSWORD:-rayvin_password}@db:5432/${DB_NAME:-rayvin_db}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - BASE_URL=${BASE_URL:-http://localhost}
+    volumes:
+      - uploads_data:/app/uploads
+      - ./token.json:/app/token.json:ro
+      - ./credentials.json:/app/credentials.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - radiology-network
+
+  # ===========================================
+  # Frontend Service (Nginx)
+  # ===========================================
+  frontend:
+    image: nginx:alpine
+    container_name: rayvin-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - radiology-network
+
+# ===========================================
+# Volumes
+# ===========================================
+volumes:
+  postgres_data:
+    driver: local
+  uploads_data:
+    driver: local
+
+# ===========================================
+# Networks
+# ===========================================
+networks:
+  radiology-network:
+    driver: bridge
