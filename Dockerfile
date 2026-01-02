@@ -34,9 +34,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
-    libxrender-dev \
+    libxrender1 \
     libgomp1 \
-    libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy virtual environment from builder
@@ -58,6 +57,7 @@ USER appuser
 # Environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
+ENV MPLBACKEND=Agg
 
 # Expose port
 EXPOSE 8000
