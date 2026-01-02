@@ -9,19 +9,22 @@ from typing import Generator
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, Text, Float, JSON, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
-from dotenv import load_dotenv
 
-load_dotenv()
+# Get DATABASE_URL from environment (Railway sets this)
+# Only use dotenv for local development
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-# Database URL from environment or default
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://rayvin:rayvin_password@localhost:5432/rayvin_db"
-)
+if not DATABASE_URL:
+    # Fallback: try loading from .env file for local dev
+    from dotenv import load_dotenv
+    load_dotenv()
+    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://rayvin:rayvin_password@localhost:5432/rayvin_db")
 
 # Fix for Railway: convert postgres:// to postgresql:// (SQLAlchemy 2.0 requirement)
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+print(f"📊 Database URL configured: {DATABASE_URL[:30]}..." if DATABASE_URL else "❌ No DATABASE_URL found")
 
 # Create engine with appropriate settings based on database type
 if DATABASE_URL.startswith("sqlite"):
