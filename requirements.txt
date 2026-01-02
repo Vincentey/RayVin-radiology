@@ -45,6 +45,7 @@ pinecone>=3.0.0,<4.0.0
 # Utilities
 scipy>=1.10.0,<2.0.0
 scikit-image>=0.21.0,<1.0.0
+matplotlib>=3.7.0,<4.0.0
 
 # Email (Gmail API OAuth 2.0)
 google-auth>=2.20.0,<3.0.0
