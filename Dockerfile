@@ -29,13 +29,14 @@ FROM python:3.11-slim as production
 
 WORKDIR /app
 
-# Install runtime dependencies
+# Install runtime dependencies (including for matplotlib)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
     libxrender-dev \
     libgomp1 \
+    libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy virtual environment from builder
@@ -61,12 +62,12 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Expose port
 EXPOSE 8000
 
-# Health check
+# Health check (Railway handles health checks, but keep for local Docker)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:${PORT:-8000}/health')" || exit 1
 
-# Run the application
-CMD ["uvicorn", "radio_assistance.mainapp.process_dicom_endpoint:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application (Railway provides PORT env var)
+CMD uvicorn radio_assistance.mainapp.process_dicom_endpoint:app --host 0.0.0.0 --port ${PORT:-8000}
 
 
 
