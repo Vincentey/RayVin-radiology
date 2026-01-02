@@ -19,6 +19,10 @@ DATABASE_URL = os.getenv(
     "postgresql://rayvin:rayvin_password@localhost:5432/rayvin_db"
 )
 
+# Fix for Railway: convert postgres:// to postgresql:// (SQLAlchemy 2.0 requirement)
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 # Create engine with appropriate settings based on database type
 if DATABASE_URL.startswith("sqlite"):
     # SQLite doesn't support pool_size, max_overflow
