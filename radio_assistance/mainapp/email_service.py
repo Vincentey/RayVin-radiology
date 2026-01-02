@@ -140,6 +140,7 @@ class SMTPService:
     def send_email(self, to_email: str, subject: str, html_content: str, text_content: Optional[str] = None) -> Dict:
         """Send email via SMTP."""
         import smtplib
+        import ssl
         
         if not self._is_configured:
             return {"success": False, "message": "SMTP not configured"}
@@ -154,10 +155,19 @@ class SMTPService:
                 msg.attach(MIMEText(text_content, "plain"))
             msg.attach(MIMEText(html_content, "html"))
             
-            with smtplib.SMTP(self.smtp_host, self.smtp_port) as server:
-                server.starttls()
-                server.login(self.smtp_user, self.smtp_password)
-                server.sendmail(self.from_email, to_email, msg.as_string())
+            # Use SSL for port 465, TLS for port 587
+            if self.smtp_port == 465:
+                # SSL connection
+                context = ssl.create_default_context()
+                with smtplib.SMTP_SSL(self.smtp_host, self.smtp_port, context=context) as server:
+                    server.login(self.smtp_user, self.smtp_password)
+                    server.sendmail(self.from_email, to_email, msg.as_string())
+            else:
+                # TLS connection (port 587)
+                with smtplib.SMTP(self.smtp_host, self.smtp_port, timeout=30) as server:
+                    server.starttls()
+                    server.login(self.smtp_user, self.smtp_password)
+                    server.sendmail(self.from_email, to_email, msg.as_string())
             
             print(f"[SMTP] Email sent to {to_email}")
             return {"success": True, "message": "Email sent via SMTP"}
