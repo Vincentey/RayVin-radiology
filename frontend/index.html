@@ -1348,6 +1348,66 @@
         }
       });
     });
+
+    // Form submission handlers
+    document.getElementById('signin-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('signin-username').value;
+      const password = document.getElementById('signin-password').value;
+      const submitBtn = this.querySelector('button[type="submit"]');
+      
+      hideMessage();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in...';
+
+      try {
+        await api.login(username, password);
+        submitBtn.textContent = '✓ Success';
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 500);
+      } catch (error) {
+        showMessage(error.message || 'Invalid username or password', 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In';
+      }
+    });
+
+    document.getElementById('signup-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('signup-username').value;
+      const password = document.getElementById('signup-password').value;
+      const fullName = document.getElementById('signup-fullname').value;
+      const email = document.getElementById('signup-email').value;
+      const role = document.getElementById('signup-role').value;
+      const submitBtn = this.querySelector('button[type="submit"]');
+      
+      hideMessage();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account...';
+
+      try {
+        const result = await api.signup(username, password, fullName, email, role);
+        submitBtn.textContent = '✓ Account Created';
+        
+        // Show success and redirect
+        if (result.email_sent) {
+          showMessage('Account created! Check your email to verify.', 'success');
+        } else {
+          showMessage('Account created! Contact admin for verification.', 'success');
+        }
+        
+        setTimeout(() => {
+          window.location.href = 'verify-email.html';
+        }, 2000);
+      } catch (error) {
+        showMessage(error.message || 'Failed to create account', 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    });
   </script>
 </body>
 </html>
