@@ -560,12 +560,14 @@
       backdrop-filter: blur(8px);
       z-index: 2000;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 24px;
       opacity: 0;
       visibility: hidden;
       transition: all 0.3s ease;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .modal-overlay.active {
@@ -582,6 +584,9 @@
       position: relative;
       transform: translateY(20px);
       transition: transform 0.3s ease;
+      margin: auto;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
     }
 
     .modal-overlay.active .modal {
@@ -847,8 +852,27 @@
       }
 
       .modal {
-        padding: 28px;
+        padding: 24px;
         margin: 12px;
+        max-height: calc(100vh - 24px);
+      }
+
+      .modal-header {
+        margin-bottom: 20px;
+      }
+
+      .modal-header img {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 12px;
+      }
+
+      .modal-header h2 {
+        font-size: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 14px;
       }
     }
 
