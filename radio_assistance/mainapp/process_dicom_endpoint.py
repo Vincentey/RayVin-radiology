@@ -88,10 +88,10 @@ app = FastAPI(
 )
 
 
-# Startup event - initialize database
+# Startup event - initialize database and preload models
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database and create default users on startup."""
+    """Initialize database, create default users, and preload AI models on startup."""
     try:
         logger.info("Initializing database...")
         initialize_auth_database()
@@ -99,6 +99,16 @@ async def startup_event():
     except Exception as e:
         logger.error(f"❌ Database initialization failed: {e}")
         logger.warning("Application will continue but database features may not work")
+    
+    # Preload AI models to avoid cold-start delays
+    try:
+        logger.info("🧠 Preloading AI models (this may take a minute on first deploy)...")
+        from .the_nodes import _xray_presenter
+        _xray_presenter.preload()
+        logger.info("✅ AI models preloaded successfully")
+    except Exception as e:
+        logger.error(f"⚠️ Model preload failed: {e}")
+        logger.warning("Models will load on first request (may be slow)")
 
 
 # Global exception handler

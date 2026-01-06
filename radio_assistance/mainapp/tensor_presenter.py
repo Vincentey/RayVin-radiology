@@ -177,6 +177,16 @@ class TensorPresenter:
         
         return self._model, self._gradcam
     
+    def preload(self):
+        """
+        Preload the model into memory.
+        Call this at application startup to avoid cold-start delays.
+        """
+        print(f"[PRELOAD] Loading {self.model_name} model into memory...")
+        self._get_model_and_gradcam()
+        print(f"[PRELOAD] Model {self.model_name} ready!")
+        return self
+    
     def _preprocess_for_xrv(self, tensor: torch.Tensor) -> torch.Tensor:
         """
         Preprocess tensor for TorchXRayVision models.
