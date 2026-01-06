@@ -3,159 +3,1267 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RayVin - AI Radiology Assistant</title>
+  <title>RayVin - AI-Powered Radiology Assistant</title>
   <link rel="icon" type="image/png" href="assets/rayvinc.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --primary-light: #2d5a87;
+      --accent: #00a8cc;
+      --accent-warm: #f4a261;
+      --text-dark: #1a1a2e;
+      --text-medium: #4a4a68;
+      --text-light: #6b7280;
+      --bg-cream: #faf8f5;
+      --bg-white: #ffffff;
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-cream);
+      color: var(--text-dark);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 16px 0;
+      transition: all 0.3s ease;
+    }
+
+    .header.scrolled {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-soft);
+      padding: 12px 0;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-medium);
+      font-weight: 500;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    .header-buttons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(30, 58, 95, 0.08);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(30, 58, 95, 0.25);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-accent:hover {
+      background: #0090b0;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 168, 204, 0.3);
+    }
+
+    .btn-large {
+      padding: 16px 32px;
+      font-size: 16px;
+      border-radius: var(--radius);
+    }
+
+    /* Mobile menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .mobile-menu-btn svg {
+      width: 28px;
+      height: 28px;
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(0, 168, 204, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 168, 204, 0.1);
+      color: var(--accent);
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--text-dark);
+      line-height: 1.15;
+      margin-bottom: 24px;
+    }
+
+    .hero-title span {
+      color: var(--accent);
+    }
+
+    .hero-description {
+      font-size: 18px;
+      color: var(--text-medium);
+      margin-bottom: 36px;
+      max-width: 500px;
+      line-height: 1.7;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+    }
+
+    .stat-item {
+      text-align: left;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    /* Hero Image */
+    .hero-image {
+      position: relative;
+    }
+
+    .hero-image-wrapper {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-medium);
+    }
+
+    .hero-image-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(30, 58, 95, 0.1) 0%, transparent 50%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hero-image-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .floating-card {
+      position: absolute;
+      background: white;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-medium);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .floating-card.card-1 {
+      bottom: 20%;
+      left: -30px;
+      animation-delay: 0s;
+    }
+
+    .floating-card.card-2 {
+      top: 15%;
+      right: -20px;
+      animation-delay: 1s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .floating-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .floating-icon.blue {
+      background: rgba(0, 168, 204, 0.15);
+      color: var(--accent);
+    }
+
+    .floating-icon.green {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+
+    .floating-text {
+      font-size: 13px;
+    }
+
+    .floating-text strong {
+      display: block;
+      font-size: 15px;
+      color: var(--text-dark);
+      margin-bottom: 2px;
+    }
+
+    .floating-text span {
+      color: var(--text-light);
+    }
+
+    /* Features Section */
+    .features {
+      padding: 100px 24px;
+      background: white;
+    }
+
+    .features-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 60px;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+    }
+
+    .section-description {
+      font-size: 17px;
+      color: var(--text-medium);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .feature-card {
+      background: var(--bg-cream);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .feature-icon.accent { background: rgba(0, 168, 204, 0.15); color: var(--accent); }
+    .feature-icon.warm { background: rgba(244, 162, 97, 0.15); color: var(--accent-warm); }
+    .feature-icon.primary { background: rgba(30, 58, 95, 0.1); color: var(--primary); }
+
+    .feature-card h3 {
+      font-size: 20px;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      font-size: 15px;
+      color: var(--text-medium);
+      line-height: 1.6;
+    }
+
+    /* Modalities */
+    .modalities {
+      padding: 100px 24px;
+      background: linear-gradient(180deg, var(--bg-cream) 0%, white 100%);
+    }
+
+    .modalities-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .modality-badges {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .modality-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      padding: 20px 28px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      transition: all 0.3s ease;
+    }
+
+    .modality-badge:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .modality-badge svg {
+      width: 32px;
+      height: 32px;
+      color: var(--accent);
+    }
+
+    .modality-badge span {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    /* CTA Section */
+    .cta {
+      padding: 100px 24px;
+      background: var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0, 168, 204, 0.2) 0%, transparent 70%);
+    }
+
+    .cta-container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 40px;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .cta p {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 36px;
+    }
+
+    .cta .btn-accent {
+      background: var(--accent);
+    }
+
+    /* Footer */
+    .footer {
+      padding: 40px 24px;
+      background: var(--text-dark);
+      text-align: center;
+    }
+
+    .footer p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+
+    /* Auth Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--text-light);
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: var(--text-dark);
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .modal-header img {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 16px;
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .modal-header p {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 24px;
+      background: var(--bg-cream);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .auth-tab.active {
+      background: white;
+      color: var(--text-dark);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-medium);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg-cream);
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      color: var(--text-dark);
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: white;
+    }
+
+    .form-input::placeholder {
+      color: var(--text-light);
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-light);
+      padding: 4px;
+    }
+
+    .auth-message {
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .auth-message.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #dc2626;
+    }
+
+    .auth-message.success {
+      display: block;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: #059669;
+    }
+
+    .auth-form.hidden {
+      display: none;
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .form-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 1024px) {
+      .hero-container {
+        gap: 40px;
+      }
+
+      .hero-title {
+        font-size: 44px;
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .header-buttons .btn-ghost {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .hero {
+        padding: 100px 20px 60px;
+      }
+
+      .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-content {
+        order: 1;
+      }
+
+      .hero-image {
+        order: 0;
+        margin-bottom: 20px;
+      }
+
+      .hero-title {
+        font-size: 36px;
+      }
+
+      .hero-description {
+        font-size: 16px;
+        margin: 0 auto 28px;
+      }
+
+      .hero-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .hero-stats {
+        justify-content: center;
+        gap: 24px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .floating-card {
+        display: none;
+      }
+
+      .features {
+        padding: 60px 20px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .section-title {
+        font-size: 32px;
+      }
+
+      .modalities {
+        padding: 60px 20px;
+      }
+
+      .modality-badges {
+        gap: 12px;
+      }
+
+      .modality-badge {
+        padding: 16px 20px;
+      }
+
+      .cta {
+        padding: 60px 20px;
+      }
+
+      .cta h2 {
+        font-size: 28px;
+      }
+
+      .modal {
+        padding: 28px;
+        margin: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-container {
+        padding: 0 16px;
+      }
+
+      .logo-text {
+        font-size: 22px;
+      }
+
+      .hero-title {
+        font-size: 30px;
+      }
+
+      .hero-stats {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .stat-number {
+        font-size: 28px;
+      }
+
+      .btn-large {
+        padding: 14px 24px;
+        font-size: 15px;
+        width: 100%;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+      }
+
+      .feature-card {
+        padding: 24px;
+      }
+    }
+  </style>
 </head>
-<body data-page="login">
-  <div class="login-page">
-    <div class="login-branding">
-      <div class="branding-content">
-        <div class="branding-icon" style="background: transparent; border: none; width: auto; height: auto;">
-          <img src="assets/rayvinc.png" alt="RayVin Logo" style="width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5)) drop-shadow(0 0 40px rgba(20, 184, 166, 0.3));">
+<body>
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header-container">
+      <a href="/" class="logo">
+        <img src="assets/rayvinc.png" alt="RayVin">
+        <span class="logo-text">RayVin</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#modalities" class="nav-link">Modalities</a>
+        <a href="#about" class="nav-link">About</a>
+      </nav>
+
+      <div class="header-buttons">
+        <button class="btn btn-ghost" onclick="openModal('signin')">Sign In</button>
+        <button class="btn btn-primary" onclick="openModal('signup')">Get Started</button>
+        <button class="mobile-menu-btn" onclick="openModal('signin')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          AI-Powered Diagnostics
         </div>
-        <h1 class="branding-title">RayVin</h1>
-        <p class="branding-subtitle">AI-powered medical imaging analysis with clinical recommendations</p>
         
-        <div class="modality-badges">
-          <span class="modality-badge">X-Ray</span>
-          <span class="modality-badge">CT Scan</span>
-          <span class="modality-badge">MRI</span>
+        <h1 class="hero-title">
+          Smarter Radiology,<br>
+          <span>Better Outcomes</span>
+        </h1>
+        
+        <p class="hero-description">
+          Empower your diagnostic workflow with advanced AI that analyzes medical images 
+          and provides clinical recommendations in seconds—not hours.
+        </p>
+        
+        <div class="hero-buttons">
+          <button class="btn btn-accent btn-large" onclick="openModal('signup')">
+            Start Free Trial
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <a href="#features" class="btn btn-ghost btn-large">Learn More</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-number">98%</div>
+            <div class="stat-label">Accuracy Rate</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">&lt;30s</div>
+            <div class="stat-label">Analysis Time</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">14+</div>
+            <div class="stat-label">Pathologies</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <div class="hero-image-wrapper">
+          <img src="assets/hero-doctor.jpg" alt="Radiologist analyzing medical imaging with AI">
         </div>
         
-        <div class="features-list">
-          <div class="feature-item">
-            <div class="feature-icon">
-              <svg width="18" height="18" fill="none" stroke="white" stroke-width="1.5" viewBox="0 0 24 24">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <path d="M21 15l-5-5L5 21"/>
-              </svg>
-            </div>
-            <div class="feature-text">
-              <strong>DICOM Analysis</strong>
-              Upload and analyze medical imaging files with AI detection
-            </div>
+        <div class="floating-card card-1">
+          <div class="floating-icon blue">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+              <path d="M22 4L12 14.01l-3-3"/>
+            </svg>
           </div>
-          <div class="feature-item">
-            <div class="feature-icon">
-              <svg width="18" height="18" fill="none" stroke="white" stroke-width="1.5" viewBox="0 0 24 24">
-                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                <path d="M14 2v6h6M16 13H8M16 17H8"/>
-              </svg>
-            </div>
-            <div class="feature-text">
-              <strong>Clinical Recommendations</strong>
-              AI-generated reports with GPT-4 powered insights
-            </div>
+          <div class="floating-text">
+            <strong>Analysis Complete</strong>
+            <span>2 findings detected</span>
           </div>
-          <div class="feature-item">
-            <div class="feature-icon">
-              <svg width="18" height="18" fill="none" stroke="white" stroke-width="1.5" viewBox="0 0 24 24">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-            </div>
-            <div class="feature-text">
-              <strong>Role-Based Access</strong>
-              Secure authentication for admins, radiologists, and clinical staff
-            </div>
+        </div>
+
+        <div class="floating-card card-2">
+          <div class="floating-icon green">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="floating-text">
+            <strong>HIPAA Compliant</strong>
+            <span>Enterprise security</span>
           </div>
         </div>
       </div>
     </div>
+  </section>
 
-    <div class="login-form-section">
-      <div class="login-form-container">
-        <!-- Tab Switcher -->
-        <div class="auth-tabs">
-          <button class="auth-tab active" data-tab="signin" onclick="switchTab('signin')">Sign In</button>
-          <button class="auth-tab" data-tab="signup" onclick="switchTab('signup')">Sign Up</button>
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="features-container">
+      <div class="section-header">
+        <span class="section-label">Features</span>
+        <h2 class="section-title">Everything You Need for Modern Radiology</h2>
+        <p class="section-description">
+          Streamline your diagnostic workflow with AI-powered tools designed for radiologists.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon accent">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+          </div>
+          <h3>DICOM Analysis</h3>
+          <p>Upload and process DICOM files with AI-powered detection for X-rays, CT scans, and MRI images.</p>
         </div>
 
-        <!-- Error/Success Message -->
-        <div class="auth-message" id="auth-message"></div>
-
-        <!-- Sign In Form -->
-        <form id="signin-form" class="auth-form">
-          <div class="form-group">
-            <label class="form-label" for="signin-username">Username</label>
-            <input type="text" id="signin-username" class="form-input" placeholder="Enter your username" required autocomplete="username">
+        <div class="feature-card">
+          <div class="feature-icon warm">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <path d="M14 2v6h6M16 13H8M16 17H8"/>
+            </svg>
           </div>
-          
-          <div class="form-group">
-            <label class="form-label" for="signin-password">Password</label>
-            <div class="input-wrapper">
-              <input type="password" id="signin-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password" style="padding-right: 44px;">
-              <button type="button" class="password-toggle" onclick="togglePassword('signin-password')" aria-label="Toggle password visibility">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-            </div>
-          </div>
+          <h3>Smart Reports</h3>
+          <p>Generate comprehensive radiology reports with GPT-4 powered clinical insights and recommendations.</p>
+        </div>
 
-          <button type="submit" class="btn btn-primary" id="signin-btn" style="width: 100%; margin-top: 8px;">Sign In</button>
-          
-          <div class="forgot-password-link" style="text-align: center; margin-top: 16px;">
-            <a href="reset-password.html" style="color: #60a5fa; text-decoration: none; font-size: 14px;">Forgot your password?</a>
+        <div class="feature-card">
+          <div class="feature-icon primary">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
           </div>
-        </form>
+          <h3>Secure & Compliant</h3>
+          <p>Enterprise-grade security with role-based access control. Your data stays protected.</p>
+        </div>
 
-        <!-- Sign Up Form -->
-        <form id="signup-form" class="auth-form hidden">
-          <div class="form-group">
-            <label class="form-label" for="signup-username">Username *</label>
-            <input type="text" id="signup-username" class="form-input" placeholder="Choose a username" required autocomplete="username">
+        <div class="feature-card">
+          <div class="feature-icon accent">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
           </div>
+          <h3>Instant Results</h3>
+          <p>Get AI analysis results in under 30 seconds. Prioritize urgent cases with smart triaging.</p>
+        </div>
 
-          <div class="form-group">
-            <label class="form-label" for="signup-fullname">Full Name</label>
-            <input type="text" id="signup-fullname" class="form-input" placeholder="Dr. John Smith" autocomplete="name">
+        <div class="feature-card">
+          <div class="feature-icon warm">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
           </div>
+          <h3>Team Collaboration</h3>
+          <p>Share studies and reports across your team. Built for radiologists, technicians, and clinicians.</p>
+        </div>
 
-          <div class="form-group">
-            <label class="form-label" for="signup-email">Email * <span style="color: #64748b; font-size: 12px;">(for verification)</span></label>
-            <input type="email" id="signup-email" class="form-input" placeholder="john.smith@hospital.org" autocomplete="email" required>
+        <div class="feature-card">
+          <div class="feature-icon primary">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
           </div>
-
-          <div class="form-group">
-            <label class="form-label" for="signup-role">Role</label>
-            <select id="signup-role" class="form-input">
-              <option value="user">Clinical User</option>
-              <option value="radiologist">Radiologist</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label" for="signup-password">Password *</label>
-            <div class="input-wrapper">
-              <input type="password" id="signup-password" class="form-input" placeholder="Create a password" required autocomplete="new-password" style="padding-right: 44px;">
-              <button type="button" class="password-toggle" onclick="togglePassword('signup-password')" aria-label="Toggle password visibility">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-primary" id="signup-btn" style="width: 100%; margin-top: 8px;">Create Account</button>
-        </form>
-
-        <div class="login-footer">
-          <p>For authorized medical personnel only</p>
+          <h3>Deep Learning</h3>
+          <p>Powered by TorchXRayVision and state-of-the-art neural networks trained on millions of images.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Modalities Section -->
+  <section class="modalities" id="modalities">
+    <div class="modalities-container">
+      <div class="section-header">
+        <span class="section-label">Supported Modalities</span>
+        <h2 class="section-title">Comprehensive Imaging Support</h2>
+        <p class="section-description">
+          Analyze all major medical imaging modalities with specialized AI models.
+        </p>
+      </div>
+
+      <div class="modality-badges">
+        <div class="modality-badge">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M12 8v8M8 12h8"/>
+          </svg>
+          <span>X-Ray (CR/DX)</span>
+        </div>
+        <div class="modality-badge">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 3v18M3 12h18"/>
+          </svg>
+          <span>CT Scan</span>
+        </div>
+        <div class="modality-badge">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+            <path d="M12 6a6 6 0 100 12 6 6 0 000-12z"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+          <span>MRI</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta" id="about">
+    <div class="cta-container">
+      <h2>Ready to Transform Your Practice?</h2>
+      <p>Join healthcare professionals who trust RayVin for faster, more accurate diagnoses.</p>
+      <button class="btn btn-accent btn-large" onclick="openModal('signup')">
+        Create Free Account
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2026 RayVin. AI-Assisted Radiology for Clinical Decision Support.</p>
+  </footer>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <div class="modal-header">
+        <img src="assets/rayvinc.png" alt="RayVin">
+        <h2 id="modal-title">Welcome Back</h2>
+        <p id="modal-subtitle">Sign in to continue to RayVin</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="signin" onclick="switchTab('signin')">Sign In</button>
+        <button class="auth-tab" data-tab="signup" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <div class="auth-message" id="auth-message"></div>
+
+      <!-- Sign In Form -->
+      <form id="signin-form" class="auth-form">
+        <div class="form-group">
+          <label class="form-label" for="signin-username">Username</label>
+          <input type="text" id="signin-username" class="form-input" placeholder="Enter your username" required autocomplete="username">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="signin-password">Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="signin-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password" style="padding-right: 44px;">
+            <button type="button" class="password-toggle" onclick="togglePassword('signin-password')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+        
+        <div class="form-footer">
+          <a href="reset-password.html">Forgot your password?</a>
+        </div>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signup-form" class="auth-form hidden">
+        <div class="form-group">
+          <label class="form-label" for="signup-username">Username *</label>
+          <input type="text" id="signup-username" class="form-input" placeholder="Choose a username" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signup-fullname">Full Name</label>
+          <input type="text" id="signup-fullname" class="form-input" placeholder="Dr. John Smith" autocomplete="name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signup-email">Email *</label>
+          <input type="email" id="signup-email" class="form-input" placeholder="john.smith@hospital.org" autocomplete="email" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signup-role">Role</label>
+          <select id="signup-role" class="form-input">
+            <option value="user">Clinical User</option>
+            <option value="radiologist">Radiologist</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="signup-password">Password *</label>
+          <div class="input-wrapper">
+            <input type="password" id="signup-password" class="form-input" placeholder="Create a password" required autocomplete="new-password" style="padding-right: 44px;">
+            <button type="button" class="password-toggle" onclick="togglePassword('signup-password')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+      </form>
     </div>
   </div>
 
   <script src="js/api.js"></script>
   <script src="js/app.js"></script>
   <script>
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Modal functions
+    function openModal(tab = 'signin') {
+      document.getElementById('auth-modal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      switchTab(tab);
+    }
+
+    function closeModal() {
+      document.getElementById('auth-modal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('auth-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeModal();
+      }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+
     function switchTab(tab) {
       // Update tabs
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -164,6 +1272,18 @@
       // Update forms
       document.querySelectorAll('.auth-form').forEach(f => f.classList.add('hidden'));
       document.getElementById(`${tab}-form`).classList.remove('hidden');
+      
+      // Update modal header
+      const title = document.getElementById('modal-title');
+      const subtitle = document.getElementById('modal-subtitle');
+      
+      if (tab === 'signin') {
+        title.textContent = 'Welcome Back';
+        subtitle.textContent = 'Sign in to continue to RayVin';
+      } else {
+        title.textContent = 'Create Account';
+        subtitle.textContent = 'Join RayVin to get started';
+      }
       
       // Clear message
       hideMessage();
@@ -193,6 +1313,17 @@
       el.className = 'auth-message';
       el.textContent = '';
     }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
   </script>
 </body>
 </html>
