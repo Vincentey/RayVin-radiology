@@ -781,10 +781,351 @@ h1, h2, h3, h4 {
 /* Hidden */
 .hidden { display: none !important; }
 
-/* Responsive */
+/* ===========================
+   MOBILE RESPONSIVE STYLES
+   =========================== */
+
+/* Tablet (900px and below) */
+@media (max-width: 900px) {
+  .results-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile (768px and below) */
 @media (max-width: 768px) {
-  .login-card { padding: 32px 24px; }
-  .nav-bar { flex-direction: column; gap: 16px; }
-  .stats-grid { grid-template-columns: 1fr; }
+  /* Base adjustments */
+  body {
+    font-size: 14px;
+  }
+  
+  .container {
+    padding: 0 12px;
+  }
+  
+  /* Login page */
+  .login-card { 
+    padding: 32px 24px; 
+  }
+  
+  /* Navigation */
+  .nav-bar { 
+    flex-direction: column; 
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .nav-logo {
+    font-size: 18px;
+  }
+  
+  .nav-user {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  /* Stats Grid */
+  .stats-grid { 
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .stat-value {
+    font-size: 24px;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+  }
+  
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 12px;
+  }
+  
+  /* Upload Zone */
+  .upload-zone {
+    padding: 32px 20px;
+  }
+  
+  .upload-icon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .upload-icon svg {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .upload-text {
+    font-size: 16px;
+  }
+  
+  .upload-hint {
+    font-size: 12px;
+  }
+  
+  /* Studies Section */
+  .studies-section {
+    padding: 16px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+  }
+  
+  /* Table responsive - horizontal scroll */
+  .studies-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  
+  .studies-table th,
+  .studies-table td {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+  
+  /* Analysis page */
+  .findings-card,
+  .report-card {
+    padding: 16px;
+  }
+  
+  .report-content {
+    font-size: 12px;
+    padding: 14px;
+    max-height: 350px;
+  }
+  
+  .finding-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 0;
+  }
+  
+  .confidence-bar {
+    width: 80px;
+  }
+  
+  /* Buttons */
+  .btn {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  .btn-icon {
+    width: 42px;
+    height: 42px;
+  }
+  
+  /* Form elements */
+  .form-input {
+    padding: 14px 16px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Toast notifications */
+  .toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    border-radius: 10px;
+  }
+  
+  /* Urgency badge */
+  .urgency-badge {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+/* Small Mobile (480px and below) */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 8px;
+  }
+  
+  /* Stats - single column on very small screens */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+  }
+  
+  .stat-icon {
+    margin-bottom: 0;
+  }
+  
+  .stat-value {
+    font-size: 22px;
+    margin-bottom: 0;
+  }
+  
+  .stat-label {
+    font-size: 11px;
+  }
+  
+  /* Nav simplify */
+  .nav-bar {
+    padding: 12px;
+  }
+  
+  .nav-logo span {
+    font-size: 16px;
+  }
+  
+  .nav-user {
+    gap: 8px;
+  }
+  
+  #user-name {
+    font-size: 13px;
+  }
+  
+  #user-role {
+    font-size: 11px;
+  }
+  
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+  
+  /* Upload zone compact */
+  .upload-zone {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+  }
+  
+  .upload-text {
+    font-size: 14px;
+  }
+  
+  /* Analysis summary */
+  .glass-card h1 {
+    font-size: 20px;
+  }
+  
+  /* Modality badges */
+  .modality-badges {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .modality-badge {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  /* Features list compact */
+  .feature-item {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  
+  .feature-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .feature-text {
+    font-size: 13px;
+  }
+  
+  /* Forms */
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-label {
+    font-size: 12px;
+  }
+  
+  /* Auth tabs */
+  .auth-tabs {
+    margin-bottom: 20px;
+  }
+  
+  .auth-tab {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  /* Login header */
+  .login-header h2 {
+    font-size: 20px;
+  }
+  
+  /* Dashboard spacing */
+  .dashboard {
+    padding: 16px 0;
+  }
+}
+
+/* Touch-friendly adjustments */
+@media (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+  }
+  
+  .form-input {
+    min-height: 48px;
+  }
+  
+  .auth-tab {
+    min-height: 44px;
+  }
+  
+  .password-toggle {
+    padding: 10px;
+  }
+  
+  .studies-table td,
+  .studies-table th {
+    padding: 14px 10px;
+  }
+}
+
+/* Landscape phone */
+@media (max-height: 500px) and (orientation: landscape) {
+  .login-page {
+    min-height: auto;
+  }
+  
+  .login-form-section {
+    min-height: auto;
+    padding: 24px;
+  }
+  
+  .branding-subtitle {
+    margin-bottom: 24px;
+  }
+  
+  .features-list {
+    display: none;
+  }
 }
 
